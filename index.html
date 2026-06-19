@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>666 Store</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --bg: #050508;
+            --bg2: #0b0b12;
+            --panel: rgba(255, 255, 255, 0.075);
+            --panel2: rgba(255, 255, 255, 0.115);
+            --text: #fff;
+            --muted: rgba(255, 255, 255, 0.66);
+            --muted2: rgba(255, 255, 255, 0.42);
+            --red: #ff2424;
+            --orange: #ff7a18;
+            --gold: #ffd166;
+            --green: #31d582;
+            --border: rgba(255, 255, 255, 0.14);
+            --shadow: 0 22px 70px rgba(0, 0, 0, 0.55);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 18% -8%, rgba(255, 36, 36, 0.34), transparent 34%),
+                radial-gradient(circle at 92% 4%, rgba(255, 122, 24, 0.26), transparent 32%),
+                radial-gradient(circle at 50% 110%, rgba(255, 36, 36, 0.14), transparent 34%),
+                linear-gradient(180deg, #08080e 0%, #030306 100%);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            opacity: 0.36;
+            background-image:
+                linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: radial-gradient(circle at 50% 20%, black, transparent 78%);
+        }
+
+        body::after {
+            content: "666";
+            position: fixed;
+            right: -42px;
+            top: 56px;
+            z-index: -1;
+            font-size: 190px;
+            font-weight: 1000;
+            letter-spacing: -16px;
+            color: rgba(255, 255, 255, 0.035);
+            transform: rotate(-8deg);
+            pointer-events: none;
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            padding: 18px 15px 36px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mark {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, var(--red), var(--orange));
+            box-shadow: 0 16px 44px rgba(255, 36, 36, 0.28);
+            font-weight: 1000;
+            font-size: 24px;
+            letter-spacing: -1.5px;
+            flex: 0 0 58px;
+        }
+
+        .mark::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.28);
+        }
+
+        .mark img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .mark span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 29px;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .brand p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .country-pill {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: #fff;
+            background: rgba(255,255,255,.07);
+            padding: 11px 13px;
+            font-weight: 850;
+            font-size: 13px;
+            white-space: nowrap;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 34px;
+            min-height: 245px;
+            padding: 24px;
+            margin-bottom: 16px;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.035)),
+                linear-gradient(135deg, rgba(255,36,36,.16), transparent 44%),
+                rgba(0,0,0,.34);
+            box-shadow: var(--shadow);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -70px;
+            top: -48px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,36,36,.26), transparent 64%);
+            filter: blur(1px);
+        }
+
+        .hero-666 {
+            position: absolute;
+            right: -20px;
+            bottom: -70px;
+            font-size: 172px;
+            line-height: .82;
+            font-weight: 1000;
+            letter-spacing: -14px;
+            background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.025));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 720px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255,36,36,.36);
+            border-radius: 999px;
+            background: rgba(255,36,36,.11);
+            padding: 8px 11px;
+            color: rgba(255,255,255,.86);
+            font-size: 12px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .hero h2 {
+            margin: 0;
+            max-width: 660px;
+            font-size: clamp(34px, 9vw, 67px);
+            line-height: .9;
+            letter-spacing: -3px;
+        }
+
+        .hero p {
+            margin: 15px 0 0;
+            max-width: 610px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .seller-note {
+            margin-top: 15px;
+            max-width: 650px;
+            border: 1px solid rgba(255, 36, 36, 0.28);
+            border-radius: 20px;
+            background: rgba(255, 36, 36, 0.09);
+            color: rgba(255, 255, 255, 0.82);
+            padding: 13px 14px;
+            line-height: 1.48;
+            font-size: 13px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .tabs {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+            padding: 8px 0;
+            margin: 10px 0 16px;
+            backdrop-filter: blur(18px);
+        }
+
+        .tab {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: rgba(255,255,255,.065);
+            color: var(--muted);
+            padding: 12px 10px;
+            font-weight: 950;
+        }
+
+        .tab.active {
+            color: #fff;
+            border-color: rgba(255,36,36,.58);
+            background: linear-gradient(135deg, rgba(255,36,36,.34), rgba(255,122,24,.18));
+            box-shadow: 0 10px 30px rgba(255,36,36,.12);
+        }
+
+        .admin-only { display: none; }
+        .admin-only.visible { display: block; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .card, .review, .admin-card {
+            border: 1px solid var(--border);
+            border-radius: 27px;
+            background: linear-gradient(145deg, rgba(255,255,255,.095), rgba(255,255,255,.045));
+            box-shadow: 0 16px 44px rgba(0,0,0,.28);
+        }
+
+        .card {
+            overflow: hidden;
+            padding: 13px;
+        }
+
+        .product-art {
+            height: 218px;
+            border-radius: 23px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 14px;
+            background:
+                radial-gradient(circle at 50% 20%, rgba(255,36,36,.22), transparent 40%),
+                linear-gradient(180deg, #1b1b26, #08080d);
+        }
+
+        .product-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 3;
+        }
+
+        .product-art.has-image::before,
+        .product-art.has-image::after {
+            display: none;
+        }
+
+        .product-art::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -44%);
+            width: 104px;
+            height: 130px;
+            border-radius: 27px 27px 20px 20px;
+            background:
+                linear-gradient(90deg, transparent 0 16px, rgba(255,255,255,.04) 16px 18px, transparent 18px),
+                linear-gradient(180deg, #242432, #0e0e15);
+            border: 1px solid rgba(255,255,255,.14);
+            box-shadow: inset 0 0 0 11px rgba(255,255,255,.025), 0 22px 48px rgba(0,0,0,.5);
+        }
+
+        .product-art.hoodie::before {
+            height: 145px;
+            border-radius: 44px 44px 22px 22px;
+        }
+
+        .product-art::after {
+            content: "666";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -19%);
+            font-size: 28px;
+            font-weight: 1000;
+            letter-spacing: -2px;
+            color: rgba(255,255,255,.92);
+            text-shadow: 0 0 22px rgba(255,36,36,.62);
+        }
+
+        .product-glow {
+            position: absolute;
+            inset: auto -30px -58px -30px;
+            height: 120px;
+            background: radial-gradient(ellipse at center, rgba(255,36,36,.26), transparent 62%);
+        }
+
+        .product-name {
+            margin: 0;
+            font-size: 19px;
+            letter-spacing: -.45px;
+        }
+
+        .product-desc {
+            margin: 8px 0 13px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .price {
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+            margin-bottom: 12px;
+        }
+
+        .price-main {
+            font-weight: 1000;
+            font-size: 25px;
+        }
+
+        .price-stars {
+            color: var(--muted2);
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+        .sizes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .sizes.hoodie-sizes {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .color-picker {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 10px 0 12px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px;
+            background: rgba(255,255,255,.045);
+        }
+
+        .color-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 11px;
+            border: 2px solid rgba(255,255,255,.2);
+            background: #fff;
+        }
+
+        .color-dot.black {
+            background: #050505;
+        }
+
+        .color-dot.active {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(255,36,36,.18);
+        }
+
+        .size {
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: rgba(255,255,255,.06);
+            color: var(--muted);
+            padding: 9px 2px;
+            font-size: 13px;
+            line-height: 1.15;
+            font-weight: 1000;
+            white-space: nowrap;
+        }
+
+        .hoodie-sizes .size {
+            font-size: 11px;
+            padding: 9px 2px;
+        }
+
+        .size.active {
+            color: #fff;
+            border-color: rgba(255,36,36,.74);
+            background: rgba(255,36,36,.24);
+        }
+
+        .buy, .success {
+            width: 100%;
+            border: none;
+            border-radius: 17px;
+            padding: 13px 14px;
+            font-weight: 1000;
+        }
+
+        .buy {
+            color: #fff;
+            background: linear-gradient(135deg, var(--red), var(--orange));
+            box-shadow: 0 15px 32px rgba(255,36,36,.24);
+        }
+
+        .success {
+            color: #041209;
+            background: var(--green);
+        }
+
+        .review, .admin-card {
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .review-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .review-product {
+            font-weight: 1000;
+            font-size: 16px;
+        }
+
+        .review-author {
+            margin-top: 4px;
+            color: var(--muted2);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .review-text {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .stars { color: var(--gold); white-space: nowrap; }
+
+        .empty {
+            border: 1px dashed var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(0,0,0,.3);
+            color: #fff;
+            padding: 12px;
+            outline: none;
+            margin: 8px 0 12px;
+        }
+
+        textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .admin-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .admin-title h3 { margin: 0; }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 14px;
+            background: rgba(255,255,255,.055);
+        }
+
+        .stat b { font-size: 27px; }
+        .stat span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+        .danger {
+            border: none;
+            border-radius: 14px;
+            background: rgba(255,77,77,.18);
+            color: #ffb7b7;
+            padding: 10px 12px;
+            font-weight: 950;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(0,0,0,.78);
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-backdrop.show { display: flex; }
+
+        .country-modal {
+            width: min(460px, 100%);
+            border: 1px solid var(--border);
+            border-radius: 34px;
+            padding: 22px;
+            background:
+                radial-gradient(circle at 20% 0%, rgba(255,36,36,.23), transparent 38%),
+                linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.055)),
+                #0d0d15;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .country-modal::after {
+            content: "666";
+            position: absolute;
+            right: -8px;
+            top: -28px;
+            font-size: 88px;
+            font-weight: 1000;
+            letter-spacing: -8px;
+            color: rgba(255,255,255,.05);
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            z-index: 3;
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255,255,255,.08);
+            color: #fff;
+            font-size: 22px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .country-modal h3 {
+            position: relative;
+            z-index: 1;
+            margin: 0 44px 8px 0;
+            font-size: 28px;
+            letter-spacing: -1px;
+        }
+
+        .country-modal p {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 16px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .country-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 11px;
+        }
+
+        .country-choice {
+            min-height: 132px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            color: #fff;
+            background: rgba(255,255,255,.07);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: left;
+            padding: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .country-choice::after {
+            content: "";
+            position: absolute;
+            inset: auto -40px -52px auto;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: rgba(255,36,36,.18);
+        }
+
+        .country-flag { font-size: 31px; }
+        .country-name { font-size: 18px; font-weight: 1000; }
+        .country-currency { color: var(--muted); font-size: 12px; font-weight: 850; }
+
+        .image-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(0,0,0,.86);
+            backdrop-filter: blur(18px);
+        }
+
+        .image-modal.show {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: min(100%, 720px);
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            background: rgba(255,255,255,.04);
+        }
+
+        .image-close {
+            position: fixed;
+            right: 18px;
+            top: 18px;
+            z-index: 71;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: rgba(255,255,255,.1);
+            color: #fff;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 20px;
+            z-index: 60;
+            transform: translateX(-50%);
+            display: none;
+            max-width: calc(100% - 28px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(20,20,28,.96);
+            padding: 12px 14px;
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        .toast.show { display: block; }
+
+        @media (max-width: 760px) {
+            .grid, .admin-grid { grid-template-columns: 1fr; }
+            .topbar { align-items: flex-start; }
+            .tabs { grid-template-columns: 1fr 1fr; }
+            .tab.admin-only.visible { grid-column: span 2; }
+            .hero { min-height: 260px; }
+            .country-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <div class="mark"><img src="img/logo.png" alt="666 Store" onerror="this.remove()"><span>666</span></div>
+                <div>
+                    <h1>666 Store</h1>
+                    <p>Авторские футболки и худи из хлопка</p>
+                </div>
+            </div>
+            <button class="country-pill" id="countryBtn">Страна</button>
+        </header>
+
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Вещи, которые хотят все</h2>
+                <p>Максимально уникальный дизайн от продавца, хлопок и качество за свою цену</p>
+                <div class="seller-note">
+                    <b>От продавца:</b> дизайн придуман лично мной, все шмотки из хлопка, качество максимум за такую цену
+                </div>
+            </div>
+            <div class="hero-666">666</div>
+        </section>
+
+        <nav class="tabs">
+            <button class="tab active" data-tab="products">🛒 Товары</button>
+            <button class="tab" data-tab="reviews">⭐ Отзывы</button>
+            <button class="tab admin-only" id="adminTab" data-tab="admin">⚙️ Админ</button>
+        </nav>
+
+        <section class="section active" id="productsSection">
+            <div class="grid" id="productsGrid"></div>
+        </section>
+
+        <section class="section" id="reviewsSection">
+            <div id="reviewFormBox"></div>
+            <div id="reviewsList"></div>
+        </section>
+
+        <section class="section" id="adminSection">
+            <div id="adminBox"></div>
+        </section>
+    </div>
+
+    <div class="modal-backdrop" id="countryModal">
+        <div class="country-modal">
+            <button class="modal-close" onclick="hideCountryModal()" aria-label="Закрыть">×</button>
+            <h3>Выбери регион</h3>
+            <p>От страны зависит валюта, которую увидишь на товарах</p>
+            <div class="country-grid">
+                <button class="country-choice" data-country="UA">
+                    <span class="country-flag">🇺🇦</span>
+                    <span>
+                        <span class="country-name">Украина</span><br>
+                        <span class="country-currency">UAH · гривна</span>
+                    </span>
+                </button>
+                <button class="country-choice" data-country="EU">
+                    <span class="country-flag">🇪🇺</span>
+                    <span>
+                        <span class="country-name">Европа</span><br>
+                        <span class="country-currency">EUR · евро</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+        <button class="image-close" onclick="closeImageModal()" aria-label="Закрыть">×</button>
+        <img id="imageModalImg" src="" alt="Фото товара">
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_BASE_URL = "https://666store-production.up.railway.app";
+        const SELLER_USERNAME = "Tishkaminecraft";
+
+        const tg = window.Telegram?.WebApp;
+        tg?.ready();
+        tg?.expand();
+
+        const fallbackProducts = [
+            { id: "tshirt-championship", name: "Футболка «Championship»", category: "tshirt", description: "Материал: хлопок, принт", price_uah: 850, price_eur: 17, price_usd: 19, stars: 1150 },
+            { id: "tshirt-fuck", name: "Футболка «Fuck»", category: "tshirt", description: "Материал: хлопок, принт", price_uah: 800, price_eur: 16, price_usd: 18, stars: 1100 },
+            { id: "hoodie-championship", name: "Худи «Championship»", category: "hoodie", description: "Материал: хлопок кулир, принт, оверсайз крой", price_uah: 1350, price_eur: 26, price_usd: 30, stars: 2100 },
+            { id: "hoodie-fuck", name: "Худи «Fuck»", category: "hoodie", description: "Материал: хлопок кулир, принт, оверсайз крой", price_uah: 1350, price_eur: 26, price_usd: 30, stars: 2100 },
+            { id: "zip-hoodie-championship", name: "Зип-Худи «championship»", category: "zip_hoodie", description: "Материал: хлопок кулир, принт, оверсайз крой", price_uah: 1700, price_eur: 38, price_usd: 34, stars: 2400 }
+        ];
+
+        let products = [];
+        let reviews = [];
+        let selectedSizes = {};
+        let selectedColors = {};
+        let isAdmin = false;
+
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
+
+        function apiUrl(path) {
+            return API_BASE_URL.replace(/\/$/, "") + path;
+        }
+
+        function initDataHeader() {
+            return tg?.initData || "";
+        }
+
+        async function api(path, options = {}) {
+            const response = await fetch(apiUrl(path), {
+                ...options,
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Telegram-Init-Data": initDataHeader(),
+                    ...(options.headers || {})
+                }
+            });
+
+            if (!response.ok) throw new Error(await response.text());
+            return response.json();
+        }
+
+        function toast(text) {
+            const el = $("#toast");
+            el.textContent = text;
+            el.classList.add("show");
+            setTimeout(() => el.classList.remove("show"), 2600);
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function getCountry() {
+            return localStorage.getItem("666_country");
+        }
+
+        function getCountryName() {
+            return getCountry() === "UA" ? "Украина" : "Европа";
+        }
+
+        function getCurrency() {
+            return getCountry() === "UA" ? "UAH" : "EUR";
+        }
+
+        function getAuthorName(review) {
+            if (!review.username) return "Неизвестный";
+            return review.username.startsWith("@") ? review.username : `@${review.username}`;
+        }
+
+        function updateCountryButton() {
+            $("#countryBtn").textContent = "Страна";
+        }
+
+        function showCountryModal() {
+            $("#countryModal").classList.add("show");
+        }
+
+        function hideCountryModal() {
+            $("#countryModal").classList.remove("show");
+        }
+
+        function setCountry(country) {
+            localStorage.setItem("666_country", country);
+            updateCountryButton();
+            hideCountryModal();
+            renderProducts();
+            syncUser();
+        }
+
+        async function loadProducts() {
+            try {
+                products = await api("/api/products");
+            } catch (error) {
+                products = fallbackProducts;
+            }
+            renderProducts();
+        }
+
+        function isHoodie(product) {
+            return product.category === "hoodie" || product.category === "zip_hoodie" || product.id.includes("hoodie");
+        }
+
+        function isZipHoodie(product) {
+            return product.category === "zip_hoodie" || product.id.includes("zip-hoodie");
+        }
+
+        function getProductSizes(product) {
+            if (isZipHoodie(product)) return ["M (160-175)", "XL (175+)", "XXL (185+)"];
+            return ["S", "M", "L", "XL"];
+        }
+
+        function getSelectedColor(product) {
+            if (!isZipHoodie(product)) return null;
+            return selectedColors[product.id] || "white";
+        }
+
+        function getColorName(color) {
+            return color === "black" ? "Черный" : "Белый";
+        }
+
+        function productImage(product, index) {
+            if (product.id === "tshirt-championship") return "img/l1.png";
+            if (product.id === "tshirt-fuck") return "img/l2.png";
+            if (product.id === "hoodie-championship") return "img/l3.png";
+            if (product.id === "hoodie-fuck") return "img/l4.png";
+            if (product.id === "zip-hoodie-championship") return getSelectedColor(product) === "black" ? "img/l5black.png" : "img/l5.png";
+            return product.image_url || product.image || `img/l${index + 1}.png`;
+        }
+
+        function renderProducts() {
+            const grid = $("#productsGrid");
+            if (!getCountry()) {
+                grid.innerHTML = `<div class="empty">Сначала выбери регион, чтобы увидеть цены</div>`;
+                return;
+            }
+
+            grid.innerHTML = products.map((product, index) => {
+                const currency = getCurrency();
+                const price = currency === "UAH" ? product.price_uah : product.price_eur;
+                const size = selectedSizes[product.id] || "";
+                const sizes = getProductSizes(product);
+                const imageSrc = productImage(product, index);
+                const color = getSelectedColor(product);
+
+                return `
+                    <article class="card">
+                        <div class="product-art ${isHoodie(product) ? "hoodie" : ""} has-image" onclick="openImageModal('${imageSrc}', '${escapeHtml(product.name)}')">
+                            <img class="product-img" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.remove(); this.parentElement.classList.remove('has-image')">
+                            <div class="product-glow"></div>
+                        </div>
+                        <h3 class="product-name">${escapeHtml(product.name)}</h3>
+                        <p class="product-desc">${escapeHtml(product.description)}</p>
+                        <div class="price">
+                            <span class="price-main">${price} ${currency}</span>
+                            <span class="price-stars">$${product.price_usd} · ⭐️ ${product.stars}</span>
+                        </div>
+                        ${isZipHoodie(product) ? `
+                            <div class="color-picker">
+                                <span class="color-label">Цвет: ${getColorName(color)}</span>
+                                <div class="color-options">
+                                    <button class="color-dot white ${color === "white" ? "active" : ""}" onclick="event.stopPropagation(); selectColor('${product.id}', 'white')" aria-label="Белый"></button>
+                                    <button class="color-dot black ${color === "black" ? "active" : ""}" onclick="event.stopPropagation(); selectColor('${product.id}', 'black')" aria-label="Черный"></button>
+                                </div>
+                            </div>
+                        ` : ""}
+                        <div class="sizes hoodie-sizes">
+                            ${sizes.map(s => `
+                                <button class="size ${size === s ? "active" : ""}" onclick="selectSize('${product.id}', '${s}')">${s}</button>
+                            `).join("")}
+                        </div>
+                        <button class="buy" onclick="buyProduct('${product.id}')">Купить</button>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        function selectSize(productId, size) {
+            selectedSizes[productId] = size;
+            renderProducts();
+        }
+
+        function selectColor(productId, color) {
+            selectedColors[productId] = color;
+            renderProducts();
+        }
+
+        async function buyProduct(productId) {
+            const product = products.find(item => item.id === productId);
+            const size = selectedSizes[productId];
+
+            if (!getCountry()) {
+                showCountryModal();
+                return;
+            }
+
+            if (!size) {
+                toast("Сначала выбери размер");
+                return;
+            }
+
+            const currency = getCurrency();
+            const price = currency === "UAH" ? product.price_uah : product.price_eur;
+            const color = getSelectedColor(product);
+
+            try {
+                await api("/api/track-click", {
+                    method: "POST",
+                    body: JSON.stringify({ product_id: product.id, country: getCountry() })
+                });
+            } catch (error) {}
+
+            const lines = [
+                `Здравствуйте! Хочу купить товар: ${product.name}`,
+                `Размер: ${size}`
+            ];
+
+            if (isZipHoodie(product)) {
+                lines.push(`Цвет: ${getColorName(color)}`);
+            }
+
+            lines.push(
+                `Страна: ${getCountryName()}`,
+                `Валюта: ${currency}`,
+                `Цена: ${price} ${currency}`,
+                `Цена в долларах: $${product.price_usd}`,
+                `Звезды Telegram: ⭐️ ${product.stars}`
+            );
+
+            const text = lines.join("\n");
+            const url = "https://t.me/" + SELLER_USERNAME + "?text=" + encodeURIComponent(text);
+            if (tg?.openTelegramLink) {
+                tg.openTelegramLink(url);
+            } else {
+                window.open(url, "_blank");
+            }
+        }
+
+        async function syncUser() {
+            if (!tg?.initDataUnsafe?.user || !getCountry()) return;
+            try {
+                await api("/api/users", {
+                    method: "POST",
+                    body: JSON.stringify({ country: getCountry() })
+                });
+            } catch (error) {}
+        }
+
+        async function loadReviews() {
+            try { reviews = await api("/api/reviews"); }
+            catch (error) { reviews = []; }
+            renderReviews();
+        }
+
+        function renderReviews() {
+            const box = $("#reviewsList");
+            if (!reviews.length) {
+                box.innerHTML = `<div class="empty">Пока отзывов нет</div>`;
+                return;
+            }
+
+            box.innerHTML = reviews.map(review => `
+                <article class="review">
+                    <div class="review-head">
+                        <div>
+                            <div class="review-product">${escapeHtml(review.product_name)}</div>
+                            <div class="review-author">${escapeHtml(getAuthorName(review))}</div>
+                        </div>
+                        <div class="stars">${"⭐".repeat(review.rating)}</div>
+                    </div>
+                    <p class="review-text">${escapeHtml(review.text)}</p>
+                </article>
+            `).join("");
+        }
+
+        async function loadReviewPermission() {
+            const box = $("#reviewFormBox");
+            try {
+                const data = await api("/api/review-permission");
+                if (!data.allowed) {
+                    box.innerHTML = "";
+                    return;
+                }
+
+                box.innerHTML = `
+                    <div class="review">
+                        <h3 style="margin-top:0">Оставить отзыв</h3>
+                        <p style="color:var(--muted)">Товар: <b>${escapeHtml(data.product_name)}</b></p>
+                        <label>Рейтинг</label>
+                        <select id="reviewRating">
+                            <option value="5">5 ⭐</option>
+                            <option value="4">4 ⭐</option>
+                            <option value="3">3 ⭐</option>
+                            <option value="2">2 ⭐</option>
+                            <option value="1">1 ⭐</option>
+                        </select>
+                        <label>Текст отзыва</label>
+                        <textarea id="reviewText" placeholder="Напиши отзыв"></textarea>
+                        <button class="success" onclick="submitReview()">Опубликовать отзыв</button>
+                    </div>
+                `;
+            } catch (error) {
+                box.innerHTML = "";
+            }
+        }
+
+        async function submitReview() {
+            const rating = Number($("#reviewRating").value);
+            const text = $("#reviewText").value.trim();
+            if (!text) return toast("Напиши текст отзыва");
+
+            try {
+                await api("/api/reviews", { method: "POST", body: JSON.stringify({ rating, text }) });
+                toast("Отзыв опубликован");
+                await loadReviews();
+                await loadReviewPermission();
+            } catch (error) {
+                toast("Не удалось опубликовать отзыв");
+            }
+        }
+
+        async function checkAdmin() {
+            try {
+                const data = await api("/api/admin/me");
+                if (data.is_admin) {
+                    isAdmin = true;
+                    $("#adminTab").classList.add("visible");
+                }
+            } catch (error) {
+                isAdmin = false;
+            }
+        }
+
+        async function loadAdmin() {
+            const box = $("#adminBox");
+            if (!isAdmin) {
+                box.innerHTML = `<div class="empty">��ет доступа.</div>`;
+                return;
+            }
+
+            try {
+                const data = await api("/api/admin/stats");
+                box.innerHTML = `
+                    <div class="admin-card">
+                        <div class="admin-title">
+                            <h3>Статистика</h3>
+                            <button class="country-pill" onclick="loadAdmin()">Обновить</button>
+                        </div>
+                        <div class="admin-grid">
+                            <div class="stat"><b>${data.total_users}</b><span>Пользователей</span></div>
+                            <div class="stat"><b>${data.country_distribution.UA || 0}</b><span>Украина</span></div>
+                            <div class="stat"><b>${data.country_distribution.EU || 0}</b><span>Европа</span></div>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <h3>Клики по товарам</h3>
+                        ${data.product_clicks.map(item => `<p><b>${escapeHtml(item.name)}</b>, ${item.clicks} кликов</p>`).join("") || `<p style="color:var(--muted)">Пока кликов нет</p>`}
+                    </div>
+                    <div class="admin-card">
+                        <h3>Выдать право на отзыв</h3>
+                        <label>Telegram ID пользователя</label>
+                        <input id="grantUserId" type="number" placeholder="Например: 123456789" />
+                        <label>Товар</label>
+                        <select id="grantProductId">
+                            ${products.map(product => `<option value="${escapeHtml(product.id)}">${escapeHtml(product.name)}</option>`).join("")}
+                        </select>
+                        <button class="success" onclick="grantReview()">Выдать право</button>
+                    </div>
+                    <div class="admin-card">
+                        <h3>Отзывы</h3>
+                        ${data.reviews.map(review => `
+                            <div class="review">
+                                <div class="review-head">
+                                    <div>
+                                        <b>${escapeHtml(review.product_name)}</b><br>
+                                        <small style="color:var(--muted2)">${escapeHtml(getAuthorName(review))} · ID отзыва: ${review.id}</small>
+                                    </div>
+                                    <div class="stars">${"⭐".repeat(review.rating)}</div>
+                                </div>
+                                <p class="review-text">${escapeHtml(review.text)}</p><br>
+                                <button class="danger" onclick="deleteReview(${review.id})">Удалить</button>
+                            </div>
+                        `).join("") || `<p style="color:var(--muted)">Пока отзывов нет</p>`}
+                    </div>
+                `;
+            } catch (error) {
+                box.innerHTML = `<div class="empty">Ошибка загрузки админки</div>`;
+            }
+        }
+
+        async function grantReview() {
+            const userId = Number($("#grantUserId").value);
+            const productId = $("#grantProductId").value;
+            if (!userId) return toast("Введи Telegram ID");
+
+            try {
+                await api("/api/admin/grant-review", { method: "POST", body: JSON.stringify({ user_id: userId, product_id: productId }) });
+                toast("Право на отзыв выдано");
+                await loadAdmin();
+            } catch (error) {
+                toast("Не удалось выдать право");
+            }
+        }
+
+        async function deleteReview(reviewId) {
+            if (!confirm("Удалить отзыв?")) return;
+            try {
+                await api(`/api/admin/reviews/${reviewId}`, { method: "DELETE" });
+                toast("Отзыв удален");
+                await loadReviews();
+                await loadAdmin();
+            } catch (error) {
+                toast("Не удалось удалить отзыв");
+            }
+        }
+
+        function openImageModal(src, alt) {
+            const modal = $("#imageModal");
+            const img = $("#imageModalImg");
+            img.src = src;
+            img.alt = alt || "Фото товара";
+            modal.classList.add("show");
+        }
+
+        function closeImageModal() {
+            $("#imageModal").classList.remove("show");
+        }
+
+        async function switchTab(tab) {
+            $$(".tab").forEach(item => item.classList.toggle("active", item.dataset.tab === tab));
+            $("#productsSection").classList.toggle("active", tab === "products");
+            $("#reviewsSection").classList.toggle("active", tab === "reviews");
+            $("#adminSection").classList.toggle("active", tab === "admin");
+
+            if (tab === "reviews") {
+                await loadReviews();
+                await loadReviewPermission();
+            }
+            if (tab === "admin") await loadAdmin();
+        }
+
+        $$(".tab").forEach(button => {
+            button.addEventListener("click", () => switchTab(button.dataset.tab));
+        });
+
+        $$(".country-choice").forEach(button => {
+            button.addEventListener("click", () => setCountry(button.dataset.country));
+        });
+
+        $("#countryBtn").addEventListener("click", showCountryModal);
+
+        updateCountryButton();
+        if (!getCountry()) showCountryModal();
+
+        loadProducts();
+        loadReviews();
+        checkAdmin();
+        syncUser();
+
+        const startTab = new URLSearchParams(location.search).get("tab");
+        if (startTab === "reviews") switchTab("reviews");
+    </script>
+</body>
+</html>
