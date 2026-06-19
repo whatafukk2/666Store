@@ -23,7 +23,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 WEBAPP_URL = os.getenv("WEBAPP_URL", "")
 DB_PATH = os.getenv("DB_PATH", "/data/666_store.sqlite3" if os.path.isdir("/data") else "666_store.sqlite3")
 
-ADMIN_IDS = [7147977803, 6635235920]
+ADMIN_IDS = [7147977803, 6635235920, 1805486928]
 
 app = FastAPI(title="666 Store API")
 
