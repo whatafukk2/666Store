@@ -99,7 +99,7 @@
         .mark {
             width: 58px;
             height: 58px;
-            border-radius: 21px;
+            border-radius: 50%;
             display: grid;
             place-items: center;
             position: relative;
@@ -109,13 +109,14 @@
             font-weight: 1000;
             font-size: 24px;
             letter-spacing: -1.5px;
+            flex: 0 0 58px;
         }
 
         .mark::after {
             content: "";
             position: absolute;
             inset: 1px;
-            border-radius: 20px;
+            border-radius: 50%;
             border: 1px solid rgba(255,255,255,.28);
         }
 
@@ -124,8 +125,9 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             z-index: 2;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .mark span {
@@ -309,20 +311,6 @@
             background:
                 radial-gradient(circle at 50% 20%, rgba(255,36,36,.22), transparent 40%),
                 linear-gradient(180deg, #1b1b26, #08080d);
-        }
-
-        .product-img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 3;
-        }
-
-        .product-art.has-image::before,
-        .product-art.has-image::after {
-            display: none;
         }
 
         .product-art::before {
@@ -673,7 +661,7 @@
                 <h2>Вещи, которые хотят все</h2>
                 <p>Максимально уникальный дизайн от продавца, хлопок и качество за свою цену</p>
                 <div class="seller-note">
-                    <b>От продавца:</b> дизайн придуман лично мной, все шмотки из хлопка, качество максимум за такую цену, пока в наличии футболки «Божество», «ПВП, моя жизнь», «Король ХТ1 игроков», а также худи 666 Store
+                    <b>От продавца:</b> дизайн придуман лично мной, все шмотки из хлопка, качество максимум за такую цену
                 </div>
             </div>
             <div class="hero-666">666</div>
@@ -702,7 +690,7 @@
     <div class="modal-backdrop" id="countryModal">
         <div class="country-modal">
             <h3>Выбери регион</h3>
-            <p>От страны зависит валюта, которую увидишь на товарах.</p>
+            <p>От страны зависит валюта, которую увидишь на товарах</p>
             <div class="country-grid">
                 <button class="country-choice" data-country="UA">
                     <span class="country-flag">🇺🇦</span>
@@ -803,10 +791,7 @@
         }
 
         function updateCountryButton() {
-            const country = getCountry();
-            $("#countryBtn").textContent = country
-                ? `${country === "UA" ? "🇺🇦 Украина" : "🇪🇺 Европа"} · ${getCurrency()}`
-                : "Выбрать страну";
+            $("#countryBtn").textContent = "Страна";
         }
 
         function showCountryModal() {
@@ -834,10 +819,6 @@
             renderProducts();
         }
 
-        function productImage(product, index) {
-            return product.image_url || product.image || `img/l${index + 1}.png`;
-        }
-
         function renderProducts() {
             const grid = $("#productsGrid");
             if (!getCountry()) {
@@ -845,16 +826,14 @@
                 return;
             }
 
-            grid.innerHTML = products.map((product, index) => {
+            grid.innerHTML = products.map(product => {
                 const currency = getCurrency();
                 const price = currency === "UAH" ? product.price_uah : product.price_eur;
                 const size = selectedSizes[product.id] || "";
-                const imageSrc = productImage(product, index);
 
                 return `
                     <article class="card">
-                        <div class="product-art ${product.category === "hoodie" ? "hoodie" : ""} has-image">
-                            <img class="product-img" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.remove(); this.parentElement.classList.remove('has-image')">
+                        <div class="product-art ${product.category === "hoodie" ? "hoodie" : ""}">
                             <div class="product-glow"></div>
                         </div>
                         <h3 class="product-name">${escapeHtml(product.name)}</h3>
@@ -1015,7 +994,7 @@
         async function loadAdmin() {
             const box = $("#adminBox");
             if (!isAdmin) {
-                box.innerHTML = `<div class="empty">Нет доступа.</div>`;
+                box.innerHTML = `<div class="empty">��ет доступа.</div>`;
                 return;
             }
 
