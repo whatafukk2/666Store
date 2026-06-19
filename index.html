@@ -1,1 +1,1103 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>666 Store</title>
 
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+	<style>
+		:root {
+			--bg: #07070b;
+			--card: rgba(255, 255, 255, 0.075);
+			--card2: rgba(255, 255, 255, 0.11);
+			--text: #ffffff;
+			--muted: rgba(255, 255, 255, 0.62);
+			--muted2: rgba(255, 255, 255, 0.38);
+			--accent: #ff2525;
+			--accent2: #ff7a18;
+			--border: rgba(255, 255, 255, 0.13);
+			--good: #35d07f;
+			--bad: #ff4d4d;
+			--shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+			background:
+				radial-gradient(circle at 15% 0%, rgba(255, 37, 37, 0.28), transparent 32%),
+				radial-gradient(circle at 90% 8%, rgba(255, 122, 24, 0.2), transparent 30%),
+				linear-gradient(180deg, #0b0b12 0%, #050507 100%);
+			color: var(--text);
+		}
+
+		button,
+		input,
+		select,
+		textarea {
+			font: inherit;
+		}
+
+		button {
+			cursor: pointer;
+		}
+
+		.app {
+			width: min(1120px, 100%);
+			margin: 0 auto;
+			padding: 20px 16px 36px;
+		}
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 18px;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.logo {
+			width: 54px;
+			height: 54px;
+			border-radius: 18px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, var(--accent), var(--accent2));
+			box-shadow: 0 14px 34px rgba(255, 37, 37, 0.28);
+			font-weight: 950;
+			font-size: 23px;
+			letter-spacing: -1px;
+		}
+
+		.brand h1 {
+			margin: 0;
+			font-size: 28px;
+			line-height: 1;
+			letter-spacing: -0.8px;
+		}
+
+		.brand p {
+			margin: 5px 0 0;
+			font-size: 13px;
+			color: var(--muted);
+		}
+
+		.country-btn {
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			background: rgba(255, 255, 255, 0.07);
+			color: white;
+			padding: 10px 13px;
+			white-space: nowrap;
+			font-weight: 800;
+			font-size: 13px;
+		}
+
+		.hero {
+			position: relative;
+			overflow: hidden;
+			border: 1px solid var(--border);
+			border-radius: 30px;
+			padding: 24px;
+			margin-bottom: 16px;
+			background:
+				linear-gradient(135deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.035)),
+				rgba(0, 0, 0, 0.3);
+			box-shadow: var(--shadow);
+		}
+
+		.hero::after {
+			content: "666";
+			position: absolute;
+			right: -26px;
+			bottom: -54px;
+			font-size: 160px;
+			font-weight: 950;
+			letter-spacing: -10px;
+			color: rgba(255, 255, 255, 0.045);
+			pointer-events: none;
+		}
+
+		.hero h2 {
+			position: relative;
+			z-index: 1;
+			margin: 0 0 10px;
+			font-size: clamp(30px, 8vw, 56px);
+			line-height: 0.95;
+			letter-spacing: -2px;
+		}
+
+		.hero p {
+			position: relative;
+			z-index: 1;
+			margin: 0;
+			color: var(--muted);
+			line-height: 1.55;
+			max-width: 680px;
+		}
+
+		.tabs {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 9px;
+			margin: 16px 0;
+			position: sticky;
+			top: 0;
+			z-index: 5;
+			padding: 8px 0;
+			backdrop-filter: blur(14px);
+		}
+
+		.tab {
+			border: 1px solid var(--border);
+			border-radius: 17px;
+			background: rgba(255, 255, 255, 0.06);
+			color: var(--muted);
+			padding: 12px 10px;
+			font-weight: 900;
+		}
+
+		.tab.active {
+			color: white;
+			border-color: rgba(255, 37, 37, 0.55);
+			background: linear-gradient(135deg, rgba(255, 37, 37, 0.34), rgba(255, 122, 24, 0.16));
+		}
+
+		.tab.admin-only {
+			display: none;
+		}
+
+		.tab.admin-only.visible {
+			display: block;
+		}
+
+		.section {
+			display: none;
+		}
+
+		.section.active {
+			display: block;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 14px;
+		}
+
+		.card {
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			padding: 14px;
+			background: var(--card);
+			box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+		}
+
+		.product-art {
+			height: 188px;
+			border-radius: 20px;
+			display: grid;
+			place-items: center;
+			position: relative;
+			overflow: hidden;
+			margin-bottom: 14px;
+			background:
+				radial-gradient(circle at 50% 30%, rgba(255, 37, 37, 0.22), transparent 36%),
+				linear-gradient(180deg, #1a1a23, #08080d);
+		}
+
+		.product-art::before {
+			content: "";
+			width: 92px;
+			height: 112px;
+			border-radius: 22px 22px 17px 17px;
+			background: linear-gradient(180deg, #20202b, #0e0e15);
+			border: 1px solid rgba(255, 255, 255, 0.13);
+			box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.02), 0 16px 38px rgba(0, 0, 0, 0.42);
+		}
+
+		.product-art.hoodie::before {
+			height: 125px;
+			border-radius: 38px 38px 20px 20px;
+		}
+
+		.product-art::after {
+			content: "666";
+			position: absolute;
+			color: rgba(255, 255, 255, 0.88);
+			font-size: 24px;
+			font-weight: 950;
+			text-shadow: 0 0 18px rgba(255, 37, 37, 0.55);
+		}
+
+		.product-name {
+			margin: 0;
+			font-size: 18px;
+			letter-spacing: -0.3px;
+		}
+
+		.product-desc {
+			margin: 8px 0 12px;
+			color: var(--muted);
+			font-size: 13px;
+			line-height: 1.45;
+		}
+
+		.price {
+			display: flex;
+			align-items: baseline;
+			gap: 8px;
+			margin-bottom: 12px;
+		}
+
+		.price-main {
+			font-size: 23px;
+			font-weight: 950;
+		}
+
+		.price-stars {
+			color: var(--muted2);
+			font-size: 13px;
+			font-weight: 800;
+		}
+
+		.sizes {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 8px;
+			margin: 12px 0;
+		}
+
+		.size {
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.055);
+			color: var(--muted);
+			padding: 10px 0;
+			font-weight: 900;
+		}
+
+		.size.active {
+			color: white;
+			border-color: rgba(255, 37, 37, 0.7);
+			background: rgba(255, 37, 37, 0.24);
+		}
+
+		.buy {
+			width: 100%;
+			border: none;
+			border-radius: 16px;
+			padding: 13px 14px;
+			background: linear-gradient(135deg, var(--accent), var(--accent2));
+			color: white;
+			font-weight: 950;
+			box-shadow: 0 12px 28px rgba(255, 37, 37, 0.24);
+		}
+
+		.review,
+		.admin-card {
+			border: 1px solid var(--border);
+			border-radius: 22px;
+			background: var(--card);
+			padding: 15px;
+			margin-bottom: 12px;
+		}
+
+		.review-head {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 8px;
+		}
+
+		.review-product {
+			font-weight: 950;
+		}
+
+		.review-text {
+			margin: 0;
+			color: var(--muted);
+			line-height: 1.5;
+		}
+
+		.stars {
+			color: #ffd166;
+			white-space: nowrap;
+		}
+
+		.empty {
+			border: 1px dashed var(--border);
+			border-radius: 22px;
+			color: var(--muted);
+			text-align: center;
+			padding: 24px;
+		}
+
+		input,
+		select,
+		textarea {
+			width: 100%;
+			border: 1px solid var(--border);
+			border-radius: 15px;
+			background: rgba(0, 0, 0, 0.28);
+			color: white;
+			padding: 12px;
+			outline: none;
+			margin: 8px 0 12px;
+		}
+
+		textarea {
+			min-height: 90px;
+			resize: vertical;
+		}
+
+		label {
+			color: var(--muted);
+			font-size: 13px;
+			font-weight: 800;
+		}
+
+		.admin-title {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 10px;
+		}
+
+		.admin-title h3 {
+			margin: 0;
+		}
+
+		.admin-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 10px;
+			margin-bottom: 12px;
+		}
+
+		.stat {
+			border: 1px solid var(--border);
+			border-radius: 18px;
+			background: rgba(255, 255, 255, 0.055);
+			padding: 14px;
+		}
+
+		.stat b {
+			font-size: 26px;
+		}
+
+		.stat span {
+			display: block;
+			color: var(--muted);
+			font-size: 12px;
+			margin-top: 4px;
+		}
+
+		.danger {
+			border: none;
+			border-radius: 13px;
+			background: rgba(255, 77, 77, 0.17);
+			color: #ffb1b1;
+			padding: 9px 11px;
+			font-weight: 900;
+		}
+
+		.success {
+			border: none;
+			border-radius: 15px;
+			background: var(--good);
+			color: #041209;
+			padding: 12px 14px;
+			font-weight: 950;
+			width: 100%;
+		}
+
+		.modal-backdrop {
+			position: fixed;
+			inset: 0;
+			z-index: 50;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 18px;
+			background: rgba(0, 0, 0, 0.75);
+			backdrop-filter: blur(18px);
+		}
+
+		.modal-backdrop.show {
+			display: flex;
+		}
+
+		.modal {
+			width: min(430px, 100%);
+			border: 1px solid var(--border);
+			border-radius: 28px;
+			background: #11111a;
+			padding: 22px;
+			box-shadow: var(--shadow);
+		}
+
+		.modal h3 {
+			margin: 0 0 8px;
+			font-size: 24px;
+		}
+
+		.modal p {
+			margin: 0 0 16px;
+			color: var(--muted);
+			line-height: 1.45;
+		}
+
+		.country-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+		}
+
+		.country-choice {
+			border: 1px solid var(--border);
+			border-radius: 18px;
+			background: rgba(255, 255, 255, 0.07);
+			color: white;
+			padding: 16px 12px;
+			font-weight: 950;
+		}
+
+		.toast {
+			position: fixed;
+			left: 50%;
+			bottom: 20px;
+			z-index: 60;
+			transform: translateX(-50%);
+			display: none;
+			max-width: calc(100% - 28px);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			background: rgba(20, 20, 28, 0.96);
+			color: white;
+			padding: 12px 14px;
+			box-shadow: var(--shadow);
+		}
+
+		.toast.show {
+			display: block;
+		}
+
+		@media (max-width: 760px) {
+			.grid,
+			.admin-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.header {
+				align-items: flex-start;
+			}
+
+			.tabs {
+				grid-template-columns: 1fr 1fr;
+			}
+
+			.tab.admin-only.visible {
+				grid-column: span 2;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="app">
+		<header class="header">
+			<div class="brand">
+				<div class="logo">666</div>
+				<div>
+					<h1>666 Store</h1>
+					<p>Футболки и худи в темном стиле</p>
+				</div>
+			</div>
+
+			<button class="country-btn" id="countryBtn">Страна</button>
+		</header>
+
+		<section class="hero">
+			<h2>Wear the dark side.</h2>
+			<p>
+				Выбери страну, товар и размер. После нажатия “Купить” Telegram откроет чат с продавцом и готовым сообщением.
+			</p>
+		</section>
+
+		<nav class="tabs">
+			<button class="tab active" data-tab="products">🛒 Товары</button>
+			<button class="tab" data-tab="reviews">⭐ Отзывы</button>
+			<button class="tab admin-only" id="adminTab" data-tab="admin">⚙️ Админ</button>
+		</nav>
+
+		<section class="section active" id="productsSection">
+			<div class="grid" id="productsGrid"></div>
+		</section>
+
+		<section class="section" id="reviewsSection">
+			<div id="reviewFormBox"></div>
+			<div id="reviewsList"></div>
+		</section>
+
+		<section class="section" id="adminSection">
+			<div id="adminBox"></div>
+		</section>
+	</div>
+
+	<div class="modal-backdrop" id="countryModal">
+		<div class="modal">
+			<h3>Выбери страну</h3>
+			<p>Так мы покажем цены в правильной валюте.</p>
+
+			<div class="country-grid">
+				<button class="country-choice" data-country="UA">🇺🇦 Украина</button>
+				<button class="country-choice" data-country="EU">🇪🇺 Европа</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="toast" id="toast"></div>
+
+	<script>
+		const API_BASE_URL = "https://666store-production.up.railway.app";
+
+		const SELLER_USERNAME = "Tishkaminecraft";
+
+		const tg = window.Telegram?.WebApp;
+		tg?.ready();
+		tg?.expand();
+
+		const fallbackProducts = [
+			{
+				id: "tshirt-black",
+				name: "666 Black T-Shirt",
+				category: "tshirt",
+				description: "Черная oversize футболка с принтом 666.",
+				price_uah: 999,
+				price_eur: 24,
+				stars: 120
+			},
+			{
+				id: "tshirt-red",
+				name: "666 Red Flame T-Shirt",
+				category: "tshirt",
+				description: "Футболка с огненным принтом и плотным хлопком.",
+				price_uah: 1099,
+				price_eur: 27,
+				stars: 135
+			},
+			{
+				id: "hoodie-black",
+				name: "666 Dark Hoodie",
+				category: "hoodie",
+				description: "Теплое худи с объемным капюшоном и принтом 666.",
+				price_uah: 2199,
+				price_eur: 54,
+				stars: 270
+			},
+			{
+				id: "hoodie-flame",
+				name: "666 Flame Hoodie",
+				category: "hoodie",
+				description: "Премиум худи с красным акцентом и streetwear-посадкой.",
+				price_uah: 2499,
+				price_eur: 61,
+				stars: 310
+			}
+		];
+
+		let products = [];
+		let reviews = [];
+		let selectedSizes = {};
+		let selectedRating = 5;
+		let isAdmin = false;
+
+		const $ = (selector) => document.querySelector(selector);
+		const $$ = (selector) => document.querySelectorAll(selector);
+
+		function apiUrl(path) {
+			return API_BASE_URL.replace(/\/$/, "") + path;
+		}
+
+		function initDataHeader() {
+			return tg?.initData || "";
+		}
+
+		async function api(path, options = {}) {
+			const response = await fetch(apiUrl(path), {
+				...options,
+				headers: {
+					"Content-Type": "application/json",
+					"X-Telegram-Init-Data": initDataHeader(),
+					...(options.headers || {})
+				}
+			});
+
+			if (!response.ok) {
+				throw new Error(await response.text());
+			}
+
+			return response.json();
+		}
+
+		function toast(text) {
+			const el = $("#toast");
+			el.textContent = text;
+			el.classList.add("show");
+			setTimeout(() => el.classList.remove("show"), 2600);
+		}
+
+		function escapeHtml(value) {
+			return String(value)
+				.replaceAll("&", "&amp;")
+				.replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;")
+				.replaceAll('"', "&quot;")
+				.replaceAll("'", "&#039;");
+		}
+
+		function getCountry() {
+			return localStorage.getItem("666_country");
+		}
+
+		function getCountryName() {
+			return getCountry() === "UA" ? "Украина" : "Европа";
+		}
+
+		function getCurrency() {
+			return getCountry() === "UA" ? "UAH" : "EUR";
+		}
+
+		function updateCountryButton() {
+			const country = getCountry();
+
+			$("#countryBtn").textContent = country
+				? `${country === "UA" ? "🇺🇦 Украина" : "🇪🇺 Европа"} · ${getCurrency()}`
+				: "Выбрать страну";
+		}
+
+		function showCountryModal() {
+			$("#countryModal").classList.add("show");
+		}
+
+		function hideCountryModal() {
+			$("#countryModal").classList.remove("show");
+		}
+
+		function setCountry(country) {
+			localStorage.setItem("666_country", country);
+			updateCountryButton();
+			hideCountryModal();
+			renderProducts();
+			syncUser();
+		}
+
+		async function loadProducts() {
+			try {
+				products = await api("/api/products");
+			} catch (error) {
+				console.warn("API товаров недоступен, используем fallback:", error);
+				products = fallbackProducts;
+			}
+
+			renderProducts();
+		}
+
+		function renderProducts() {
+			const grid = $("#productsGrid");
+
+			if (!getCountry()) {
+				grid.innerHTML = `<div class="empty">Сначала выбери страну, чтобы увидеть цены.</div>`;
+				return;
+			}
+
+			grid.innerHTML = products.map(product => {
+				const currency = getCurrency();
+				const price = currency === "UAH" ? product.price_uah : product.price_eur;
+				const size = selectedSizes[product.id] || "";
+
+				return `
+					<article class="card">
+						<div class="product-art ${product.category === "hoodie" ? "hoodie" : ""}"></div>
+
+						<h3 class="product-name">${escapeHtml(product.name)}</h3>
+						<p class="product-desc">${escapeHtml(product.description)}</p>
+
+						<div class="price">
+							<span class="price-main">${price} ${currency}</span>
+							<span class="price-stars">⭐ ${product.stars}</span>
+						</div>
+
+						<div class="sizes">
+							${["S", "M", "L", "XL"].map(s => `
+								<button class="size ${size === s ? "active" : ""}" onclick="selectSize('${product.id}', '${s}')">
+									${s}
+								</button>
+							`).join("")}
+						</div>
+
+						<button class="buy" onclick="buyProduct('${product.id}')">
+							Купить
+						</button>
+					</article>
+				`;
+			}).join("");
+		}
+
+		function selectSize(productId, size) {
+			selectedSizes[productId] = size;
+			renderProducts();
+		}
+
+		async function buyProduct(productId) {
+			const product = products.find(item => item.id === productId);
+			const size = selectedSizes[productId];
+
+			if (!getCountry()) {
+				showCountryModal();
+				return;
+			}
+
+			if (!size) {
+				toast("Сначала выбери размер");
+				return;
+			}
+
+			const currency = getCurrency();
+			const price = currency === "UAH" ? product.price_uah : product.price_eur;
+			const user = tg?.initDataUnsafe?.user;
+
+			try {
+				await api("/api/track-click", {
+					method: "POST",
+					body: JSON.stringify({
+						product_id: product.id,
+						country: getCountry()
+					})
+				});
+			} catch (error) {
+				console.warn("Не удалось отправить статистику:", error);
+			}
+
+			const text = [
+				"Здравствуйте! Хочу купить товар из 666 Store.",
+				`Товар: ${product.name}`,
+				`Размер: ${size}`,
+				`Страна: ${getCountryName()}`,
+				`Валюта: ${currency}`,
+				`Цена: ${price} ${currency}`,
+				`Telegram Stars: ⭐ ${product.stars}`,
+				user?.username ? `Покупатель: @${user.username}` : ""
+			].filter(Boolean).join("\n");
+
+			const url = `https://t.me/${SELLER_USERNAME}?text=${encodeURIComponent(text)}`;
+
+			if (tg?.openTelegramLink) {
+				tg.openTelegramLink(url);
+			} else {
+				window.location.href = url;
+			}
+		}
+
+		async function syncUser() {
+			const user = tg?.initDataUnsafe?.user;
+
+			if (!user || !getCountry()) return;
+
+			try {
+				await api("/api/users", {
+					method: "POST",
+					body: JSON.stringify({
+						country: getCountry()
+					})
+				});
+			} catch (error) {
+				console.warn("Не удалось синхронизировать пользователя:", error);
+			}
+		}
+
+		async function loadReviews() {
+			try {
+				reviews = await api("/api/reviews");
+			} catch (error) {
+				reviews = [];
+			}
+
+			renderReviews();
+		}
+
+		function renderReviews() {
+			const box = $("#reviewsList");
+
+			if (!reviews.length) {
+				box.innerHTML = `<div class="empty">Пока отзывов нет.</div>`;
+				return;
+			}
+
+			box.innerHTML = reviews.map(review => `
+				<article class="review">
+					<div class="review-head">
+						<div>
+							<div class="review-product">${escapeHtml(review.product_name)}</div>
+							<small style="color: var(--muted2)">User ID: ${escapeHtml(review.user_id)}</small>
+						</div>
+						<div class="stars">${"⭐".repeat(review.rating)}</div>
+					</div>
+					<p class="review-text">${escapeHtml(review.text)}</p>
+				</article>
+			`).join("");
+		}
+
+		async function loadReviewPermission() {
+			const box = $("#reviewFormBox");
+
+			try {
+				const data = await api("/api/review-permission");
+
+				if (!data.allowed) {
+					box.innerHTML = "";
+					return;
+				}
+
+				box.innerHTML = `
+					<div class="review">
+						<h3 style="margin-top: 0">Оставить отзыв</h3>
+						<p style="color: var(--muted)">Товар: <b>${escapeHtml(data.product_name)}</b></p>
+
+						<label>Рейтинг</label>
+						<select id="reviewRating">
+							<option value="5">5 ⭐</option>
+							<option value="4">4 ⭐</option>
+							<option value="3">3 ⭐</option>
+							<option value="2">2 ⭐</option>
+							<option value="1">1 ⭐</option>
+						</select>
+
+						<label>Текст отзыва</label>
+						<textarea id="reviewText" placeholder="Напиши отзыв..."></textarea>
+
+						<button class="success" onclick="submitReview()">Опубликовать отзыв</button>
+					</div>
+				`;
+			} catch (error) {
+				box.innerHTML = "";
+			}
+		}
+
+		async function submitReview() {
+			const rating = Number($("#reviewRating").value);
+			const text = $("#reviewText").value.trim();
+
+			if (!text) {
+				toast("Напиши текст отзыва");
+				return;
+			}
+
+			try {
+				await api("/api/reviews", {
+					method: "POST",
+					body: JSON.stringify({ rating, text })
+				});
+
+				toast("Отзыв опубликован");
+				await loadReviews();
+				await loadReviewPermission();
+			} catch (error) {
+				toast("Не удалось опубликовать отзыв");
+			}
+		}
+
+		async function checkAdmin() {
+			try {
+				const data = await api("/api/admin/me");
+
+				if (data.is_admin) {
+					isAdmin = true;
+					$("#adminTab").classList.add("visible");
+				}
+			} catch (error) {
+				isAdmin = false;
+			}
+		}
+
+		async function loadAdmin() {
+			const box = $("#adminBox");
+
+			if (!isAdmin) {
+				box.innerHTML = `<div class="empty">Нет доступа.</div>`;
+				return;
+			}
+
+			try {
+				const data = await api("/api/admin/stats");
+
+				box.innerHTML = `
+					<div class="admin-card">
+						<div class="admin-title">
+							<h3>Статистика</h3>
+							<button class="country-btn" onclick="loadAdmin()">Обновить</button>
+						</div>
+
+						<div class="admin-grid">
+							<div class="stat">
+								<b>${data.total_users}</b>
+								<span>Пользователей</span>
+							</div>
+							<div class="stat">
+								<b>${data.country_distribution.UA || 0}</b>
+								<span>Украина</span>
+							</div>
+							<div class="stat">
+								<b>${data.country_distribution.EU || 0}</b>
+								<span>Европа</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="admin-card">
+						<h3>Клики по товарам</h3>
+						${data.product_clicks.map(item => `
+							<p>
+								<b>${escapeHtml(item.name)}</b> — ${item.clicks} кликов
+							</p>
+						`).join("") || `<p style="color: var(--muted)">Пока кликов нет.</p>`}
+					</div>
+
+					<div class="admin-card">
+						<h3>Выдать право на отзыв</h3>
+
+						<label>Telegram ID пользователя</label>
+						<input id="grantUserId" type="number" placeholder="Например: 123456789" />
+
+						<label>Товар</label>
+						<select id="grantProductId">
+							${products.map(product => `
+								<option value="${escapeHtml(product.id)}">${escapeHtml(product.name)}</option>
+							`).join("")}
+						</select>
+
+						<button class="success" onclick="grantReview()">Выдать право</button>
+					</div>
+
+					<div class="admin-card">
+						<h3>Отзывы</h3>
+						${data.reviews.map(review => `
+							<div class="review">
+								<div class="review-head">
+									<div>
+										<b>${escapeHtml(review.product_name)}</b><br />
+										<small style="color: var(--muted2)">ID отзыва: ${review.id}, User ID: ${review.user_id}</small>
+									</div>
+									<div class="stars">${"⭐".repeat(review.rating)}</div>
+								</div>
+								<p class="review-text">${escapeHtml(review.text)}</p>
+								<br />
+								<button class="danger" onclick="deleteReview(${review.id})">Удалить</button>
+							</div>
+						`).join("") || `<p style="color: var(--muted)">Пока отзывов нет.</p>`}
+					</div>
+				`;
+			} catch (error) {
+				box.innerHTML = `<div class="empty">Ошибка загрузки админки.</div>`;
+			}
+		}
+
+		async function grantReview() {
+			const userId = Number($("#grantUserId").value);
+			const productId = $("#grantProductId").value;
+
+			if (!userId) {
+				toast("Введи Telegram ID");
+				return;
+			}
+
+			try {
+				await api("/api/admin/grant-review", {
+					method: "POST",
+					body: JSON.stringify({
+						user_id: userId,
+						product_id: productId
+					})
+				});
+
+				toast("Право на отзыв выдано");
+				await loadAdmin();
+			} catch (error) {
+				toast("Не удалось выдать право");
+			}
+		}
+
+		async function deleteReview(reviewId) {
+			if (!confirm("Удалить отзыв?")) return;
+
+			try {
+				await api(`/api/admin/reviews/${reviewId}`, {
+					method: "DELETE"
+				});
+
+				toast("Отзыв удален");
+				await loadReviews();
+				await loadAdmin();
+			} catch (error) {
+				toast("Не удалось удалить отзыв");
+			}
+		}
+
+		$$(".tab").forEach(button => {
+			button.addEventListener("click", async () => {
+				$$(".tab").forEach(item => item.classList.remove("active"));
+				button.classList.add("active");
+
+				const tab = button.dataset.tab;
+
+				$("#productsSection").classList.toggle("active", tab === "products");
+				$("#reviewsSection").classList.toggle("active", tab === "reviews");
+				$("#adminSection").classList.toggle("active", tab === "admin");
+
+				if (tab === "reviews") {
+					await loadReviews();
+					await loadReviewPermission();
+				}
+
+				if (tab === "admin") {
+					await loadAdmin();
+				}
+			});
+		});
+
+		$$(".country-choice").forEach(button => {
+			button.addEventListener("click", () => {
+				setCountry(button.dataset.country);
+			});
+		});
+
+		$("#countryBtn").addEventListener("click", showCountryModal);
+
+		updateCountryButton();
+
+		if (!getCountry()) {
+			showCountryModal();
+		}
+
+		loadProducts();
+		loadReviews();
+		checkAdmin();
+		syncUser();
+	</script>
+</body>
+</html>
