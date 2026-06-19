@@ -7,7 +7,7 @@ import sqlite3
 import time
 from datetime import datetime
 from typing import Optional
-from urllib.parse import parse_qsl
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, parse_qsl as url_parse_qsl
 
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
@@ -54,6 +54,11 @@ def now_iso() -> str:
 
 def rows_to_dicts(rows) -> list[dict]:
     return [dict(row) for row in rows]
+
+
+def column_exists(db: sqlite3.Connection, table: str, column: str) -> bool:
+    rows = db.execute(f"PRAGMA table_info({table})").fetchall()
+    return any(row["name"] == column for row in rows)
 
 
 def init_db() -> None:
@@ -108,6 +113,7 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS reviews (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
+                username TEXT DEFAULT '',
                 product_id TEXT NOT NULL,
                 product_name TEXT NOT NULL,
                 rating INTEGER NOT NULL,
@@ -116,12 +122,15 @@ def init_db() -> None:
             )
         """)
 
+        if not column_exists(db, "reviews", "username"):
+            db.execute("ALTER TABLE reviews ADD COLUMN username TEXT DEFAULT ''")
+
         products = [
             (
                 "tshirt-black",
                 "666 Black T-Shirt",
                 "tshirt",
-                "Черная oversize футболка с принтом 666.",
+                "Плотная черная oversize футболка с фирменным принтом 666.",
                 999,
                 24,
                 120,
@@ -130,7 +139,7 @@ def init_db() -> None:
                 "tshirt-red",
                 "666 Red Flame T-Shirt",
                 "tshirt",
-                "Футболка с огненным принтом и плотным хлопком.",
+                "Футболка с огненным принтом, мягким хлопком и streetwear-посадкой.",
                 1099,
                 27,
                 135,
@@ -139,7 +148,7 @@ def init_db() -> None:
                 "hoodie-black",
                 "666 Dark Hoodie",
                 "hoodie",
-                "Теплое худи с объемным капюшоном и принтом 666.",
+                "Теплое худи с объемным капюшоном, плотной тканью и принтом 666.",
                 2199,
                 54,
                 270,
@@ -148,7 +157,7 @@ def init_db() -> None:
                 "hoodie-flame",
                 "666 Flame Hoodie",
                 "hoodie",
-                "Премиум худи с красным акцентом и streetwear-посадкой.",
+                "Премиум худи с красными акцентами, свободной посадкой и темной эстетикой.",
                 2499,
                 61,
                 310,
@@ -262,6 +271,14 @@ def get_current_admin(x_telegram_init_data: Optional[str]) -> dict:
     return user
 
 
+def webapp_url_with_tab(tab: str) -> str:
+    base_url = WEBAPP_URL or "https://example.com"
+    parts = urlsplit(base_url)
+    query = dict(url_parse_qsl(parts.query, keep_blank_values=True))
+    query["tab"] = tab
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+
+
 class SyncUserIn(BaseModel):
     country: str = Field(default="", pattern="^(UA|EU)?$")
 
@@ -307,7 +324,7 @@ async def get_products():
 async def get_reviews():
     with get_db() as db:
         rows = db.execute("""
-            SELECT id, user_id, product_id, product_name, rating, text, created_at
+            SELECT id, user_id, COALESCE(username, '') AS username, product_id, product_name, rating, text, created_at
             FROM reviews
             ORDER BY id DESC
             LIMIT 100
@@ -402,6 +419,7 @@ async def create_review(
 ):
     user = get_current_user(x_telegram_init_data)
     user_id = int(user["id"])
+    username = user.get("username", "") or ""
 
     with get_db() as db:
         permission = db.execute("""
@@ -417,10 +435,11 @@ async def create_review(
 
         db.execute("""
             INSERT INTO reviews
-                (user_id, product_id, product_name, rating, text, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
+                (user_id, username, product_id, product_name, rating, text, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
             user_id,
+            username,
             permission["product_id"],
             permission["product_name"],
             payload.rating,
@@ -476,7 +495,7 @@ async def admin_stats(
         """).fetchall()
 
         review_rows = db.execute("""
-            SELECT id, user_id, product_id, product_name, rating, text, created_at
+            SELECT id, user_id, COALESCE(username, '') AS username, product_id, product_name, rating, text, created_at
             FROM reviews
             ORDER BY id DESC
             LIMIT 200
@@ -555,43 +574,48 @@ async def admin_delete_review(
     return {"ok": True}
 
 
-def get_last_reviews_text() -> str:
+def get_last_review_text() -> str:
     with get_db() as db:
-        rows = db.execute("""
-            SELECT product_name, rating, text
+        row = db.execute("""
+            SELECT product_name, rating, text, COALESCE(username, '') AS username
             FROM reviews
             ORDER BY id DESC
-            LIMIT 3
-        """).fetchall()
+            LIMIT 1
+        """).fetchone()
 
-    if not rows:
+    if not row:
         return "Пока отзывов нет."
 
-    lines = []
+    stars = "⭐" * int(row["rating"])
+    username = row["username"] or "Неизвестный"
+    if username != "Неизвестный" and not username.startswith("@"):
+        username = f"@{username}"
 
-    for row in rows:
-        stars = "⭐" * int(row["rating"])
-        text = row["text"]
+    text = row["text"]
+    if len(text) > 140:
+        text = text[:137] + "..."
 
-        if len(text) > 90:
-            text = text[:87] + "..."
-
-        lines.append(f"{stars} {row['product_name']}: {text}")
-
-    return "\n".join(lines)
+    return f"{stars} {row['product_name']}\n{username}: {text}"
 
 
 def store_keyboard() -> InlineKeyboardMarkup:
-    url = WEBAPP_URL or "https://example.com"
+    shop_url = WEBAPP_URL or "https://example.com"
+    reviews_url = webapp_url_with_tab("reviews")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text="🛒 Открыть магазин",
-                    web_app=WebAppInfo(url=url),
+                    web_app=WebAppInfo(url=shop_url),
                 )
-            ]
+            ],
+            [
+                InlineKeyboardButton(
+                    text="⭐ Отзывы",
+                    web_app=WebAppInfo(url=reviews_url),
+                )
+            ],
         ]
     )
 
@@ -610,8 +634,8 @@ async def any_message(message: types.Message):
     text = (
         "🖤 Добро пожаловать в 666 Store.\n\n"
         "Футболки и худи уже ждут тебя в Mini App.\n\n"
-        "Последние отзывы:\n"
-        f"{get_last_reviews_text()}"
+        "Последний отзыв:\n"
+        f"{get_last_review_text()}"
     )
 
     await message.answer(text, reply_markup=store_keyboard())
